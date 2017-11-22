@@ -33,7 +33,7 @@ exports.update = function(req, res){
             if(updated.notEmpty)
                 sendResponse(res, updated, 200);
             else
-                sendResponse(res, {error : "Not Found"}, 400);
+                sendResponse(res, {error : "Not Found"}, 400);  //
         });
     });
 };
