@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../duty2.0/.idea/duty.iml" filepath="$PROJECT_DIR$/../duty2.0/.idea/duty.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/rest_api.iml" filepath="$PROJECT_DIR$/.idea/rest_api.iml" />
     </modules>
   </component>
 </project>
