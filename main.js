@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const validator = require('express-validator');
 const workerController = require('./routes/WorkerController');
+const taskController = require('./routes/TaskController');
 
 const PORT = 8456;
 const app = express();
@@ -17,3 +18,4 @@ app.listen(PORT, function () {
 app.use(bodyParser.json());
 app.use(validator());
 app.use(workerController);
+app.use(taskController);
