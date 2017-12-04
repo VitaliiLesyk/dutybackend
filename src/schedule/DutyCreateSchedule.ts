@@ -9,7 +9,7 @@ export class DutyCreateSchedule{
 
     constructor(dutyService:DutyService){
         this.job = new CronJob({
-            cronTime: "00 50 21 * * 0-6",
+            cronTime: "00 00 00 * * 0-6",
             onTick: ()=>{
                 this.tick();
             },
