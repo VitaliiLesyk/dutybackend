@@ -49,7 +49,7 @@ export class DutyService{
     }
 
     public getByDate(date:Date): Promise<Duty>{
-        console.log("DutyService: to get duty by date=[" + date.toString("d-M-yyyy"));
+        console.log("DutyService: to get duty by date=[" + date.toString("d-M-yyyy") + "]");
         return this.dutyRepository.findOne({where:{date:date.toString("d-M-yyyy")}});
     }
 

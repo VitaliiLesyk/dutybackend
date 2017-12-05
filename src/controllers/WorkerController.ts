@@ -1,12 +1,12 @@
 import {WorkerService} from '../services/WorkerService';
 import {Body, Delete, Get, JsonController, Param, Post, Put} from "routing-controllers";
 import {Worker} from "../models/Worker";
-import {Service} from "typedi";
+
 @JsonController("/workers")
 export class WorkerController{
     private workerService:WorkerService;
 
-    constructor(@Service() workerService:WorkerService){
+    constructor(workerService:WorkerService){
         this.workerService = workerService;
     }
 

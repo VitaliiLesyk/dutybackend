@@ -1,14 +1,13 @@
 import { Get, JsonController, Param} from "routing-controllers";
 import {DutyService} from "../services/DutyService";
 import {Duty} from "../models/Duty";
-import {Service} from "typedi";
 
 @JsonController("/duty")
 export class DutyController{
 
     private dutyService:DutyService;
 
-    constructor(@Service() dutyService:DutyService){
+    constructor(dutyService:DutyService){
         this.dutyService = dutyService;
     }
 

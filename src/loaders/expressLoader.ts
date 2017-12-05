@@ -4,14 +4,20 @@ import {TaskController} from "../controllers/TaskController";
 import {WorkerController} from "../controllers/WorkerController";
 import {ErrorHandlerMiddleware} from "../middlewares/ErrorHandlerMiddleware";
 import {DutyController} from "../controllers/DutyController";
+import {UserController} from "../controllers/UserController";
+import {CompressionMiddleware} from "../middlewares/CompressionMiddleware";
+import {SecurityMiddleware} from "../middlewares/SecurityMiddleware";
+import {SecurityHstsMiddleware} from "../middlewares/SecurityHstsMiddleware";
+import {SecurityNoCacheMiddleware} from "../middlewares/SecurityNoCacheMiddleware";
 
 
 export const expressLoader: MicroframeworkLoader = (settings: MicroframeworkSettings | undefined) => {
     if (settings) {
         const expressApp = createExpressServer({
+            cors: true,
             defaultErrorHandler: false,
-            controllers: [TaskController, WorkerController, DutyController],
-            middlewares: [ErrorHandlerMiddleware]
+            controllers: [TaskController, WorkerController, DutyController, UserController],
+            middlewares: [ErrorHandlerMiddleware, CompressionMiddleware, SecurityMiddleware, SecurityHstsMiddleware, SecurityNoCacheMiddleware]
 
         });
 
