@@ -58,4 +58,9 @@ export class DutyService{
         let currentDate = Date.today();
         return this.dutyRepository.findOne({where:{date:currentDate.toString("d-M-yyyy")}});
     }
+
+    public deleteAllByWorkerId(workerId: number){
+        console.log("DutyService: delete all by worker id=[" + workerId + "]");
+        this.dutyRepository.deleteAllByWorkerId(workerId);
+    }
 }

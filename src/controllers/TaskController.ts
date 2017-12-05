@@ -29,11 +29,10 @@ export class TaskController{
         return this.taskService.getOne(id);
     }
 
-    @Put("/update/:id")
-    public update(@Param("id") id:number,
-                  @Body() task:Task){
-        console.log("TaskController: PUT request to update task by id=[" + id + "]");
-        return this.taskService.update(id, task);
+    @Put("/update")
+    public update(@Body() task:Task){
+        console.log("TaskController: PUT request to update task " + task);
+        return this.taskService.update(task);
     }
 
     @Delete("/delete/:id")

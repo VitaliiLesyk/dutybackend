@@ -4,6 +4,7 @@ import {WorkerRepository} from "../repositories/WorkerRepository";
 import {OrmRepository} from "typeorm-typedi-extensions";
 import {DutyService} from "./DutyService";
 import {Duty} from "../models/Duty";
+import {IdError} from "../errors/IdError";
 
 @Service()
 export class WorkerService {
@@ -18,11 +19,19 @@ export class WorkerService {
 
     public add(worker: Worker):Promise<Worker> {
         console.log("WorkerService: to add one worker");
+
+        if(!this.idIsNull(worker.id))
+            throw new IdError("Id field should be empty");
+
         return this.workerRepository.save(worker).then(added=> {
             this.dutyService.createOneByWorker(added);
             return added;
         });
     }
+
+        private idIsNull(id:number):boolean{
+            return id === null || typeof id === 'undefined';
+        }
 
     public getAll():Promise<Worker[]> {
         console.log("WorkerService: to get all workers");
@@ -34,11 +43,14 @@ export class WorkerService {
         return this.workerRepository.findOne({where:{id:id}});
     }
 
-    public update(id: number, worker: Worker):Promise<Worker>{
-        console.log("WorkerService: to update worker by id=[" + id + "]");
-        return this.workerRepository.findOne({where:{id:id}}).then(found=>{
+    public update(worker: Worker):Promise<Worker>{
+        console.log("WorkerService: to update worker " + worker);
+
+        if(this.idIsNull(worker.id))
+            throw new IdError("Id field should not be empty");
+
+        return this.workerRepository.findOne({where:{id:worker.id}}).then(found=>{
             if(typeof found !== 'undefined'){
-                worker.id = id;
                 return this.workerRepository.save(worker);
             }
         });
@@ -47,6 +59,7 @@ export class WorkerService {
     public deleteById(id: number):Promise<Worker>{
         console.log("WorkerService: to delete worker by id=[" + id + "]");
         return this.workerRepository.findOne({where:{id:id}}).then((found)=>{
+            this.dutyService.deleteAllByWorkerId(id);
             this.workerRepository.delete(id);
             return found;
         });

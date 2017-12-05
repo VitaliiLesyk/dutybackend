@@ -28,11 +28,10 @@ export class WorkerController{
         return this.workerService.getOne(id);
     }
 
-    @Put("/update/:id")
-    public update(@Param("id") id:number,
-                  @Body() worker:Worker) : Promise<Worker>{
-        console.log("PUT request to update worker by id=[" + id + "]");
-        return this.workerService.update(id, worker);
+    @Put("/update")
+    public update(@Body() worker:Worker) : Promise<Worker>{
+        console.log("PUT request to update worker " + worker);
+        return this.workerService.update(worker);
     }
 
     @Delete("/delete/:id")

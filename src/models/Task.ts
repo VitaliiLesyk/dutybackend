@@ -1,11 +1,9 @@
 import {Entity} from "typeorm/decorator/entity/Entity";
 import {BaseEntity, Column, PrimaryGeneratedColumn} from "typeorm";
-import {IsEmpty, IsNotEmpty, MaxLength} from "class-validator";
+import {IsNotEmpty, MaxLength} from "class-validator";
 
 @Entity()
 export class Task extends BaseEntity {
-
-    @IsEmpty({message:"Id field should be empty!"})
     @PrimaryGeneratedColumn()
     id: number;
 

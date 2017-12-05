@@ -3,6 +3,7 @@ import {TaskRepository} from "../repositories/TaskRepository";
 import {Task} from "../models/Task";
 import {OrmRepository} from "typeorm-typedi-extensions";
 import {HttpError} from "routing-controllers";
+import {IdError} from "../errors/IdError";
 
 @Service()
 export class TaskService{
@@ -15,8 +16,15 @@ export class TaskService{
 
     public add(task : Task) : Promise<Task>{
         console.log("TaskService: to add one task");
+        if(!this.idIsNull(task.id))
+            throw new IdError("Id should be empty!");
+
         return this.taskRepository.save(task);
     }
+
+        private idIsNull(id:number):boolean{
+            return id===null || typeof id === 'undefined';
+        }
 
     public getOne(id: number) : Promise<Task>{
         console.log("TaskService: to get one task by id=[" + id + "]");
@@ -28,11 +36,14 @@ export class TaskService{
         return this.taskRepository.find();
     }
 
-    public update(id: number, task:Task) : Promise<Task>{
-        console.log("TaskService: to update task with id=[" + id + "]");
-        return this.taskRepository.findOne({where:{id:id}}).then(found=>{
+    public update(task:Task) : Promise<Task>{
+        console.log("TaskService: to update task " + task);
+
+        if(this.idIsNull(task.id))
+            throw new IdError("Id should not be empty!");
+
+        return this.taskRepository.findOne({where:{id:task.id}}).then(found=>{
             if(typeof found !== 'undefined') {
-                task.id = id;
                 return this.taskRepository.save(task);
             }
             else
