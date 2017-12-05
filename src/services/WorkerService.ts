@@ -3,6 +3,7 @@ import {Worker} from "../models/Worker";
 import {WorkerRepository} from "../repositories/WorkerRepository";
 import {OrmRepository} from "typeorm-typedi-extensions";
 import {DutyService} from "./DutyService";
+import {Duty} from "../models/Duty";
 
 @Service()
 export class WorkerService {
@@ -51,5 +52,9 @@ export class WorkerService {
         });
     }
 
-
+    public getByCurrentDuty():Promise<Worker> {
+        console.log("WorkerService: to get by current duty");
+        let currentDuty: Promise<Duty> = this.dutyService.getCurrentDuty();
+        return this.workerRepository.findOne({where: {duty: currentDuty}});
+    }
 }

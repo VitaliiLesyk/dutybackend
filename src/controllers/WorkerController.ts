@@ -40,4 +40,10 @@ export class WorkerController{
         console.log("DELETE request to delete worker by id=[" + id + "]");
         return this.workerService.deleteById(id);
     }
+
+    @Get("/getByCurrentDuty")
+    public getByCurrentDuty():Promise<Worker>{
+        console.log("GET request to get worker by current duty");
+        return this.workerService.getByCurrentDuty();
+    }
 }

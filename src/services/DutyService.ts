@@ -52,4 +52,10 @@ export class DutyService{
         console.log("DutyService: to get duty by date=[" + date.toString("d-M-yyyy"));
         return this.dutyRepository.findOne({where:{date:date.toString("d-M-yyyy")}});
     }
+
+    public getCurrentDuty():Promise<Duty>{
+        console.log("DutyService: to get current duty");
+        let currentDate = Date.today();
+        return this.dutyRepository.findOne({where:{date:currentDate.toString("d-M-yyyy")}});
+    }
 }

@@ -29,5 +29,4 @@ export class DutyController{
         console.log("GET request: to get duty by date=[" + date.toString("d-M-yyyy") + "]");
         return this.dutyService.getByDate(date);
     }
-
 }
