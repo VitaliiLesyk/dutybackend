@@ -1,6 +1,5 @@
 import {Entity} from "typeorm/decorator/entity/Entity";
 import {BaseEntity, Column, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {StatusEnum} from "../enums/StatusEnum";
 import {IsEmail, IsEmpty, IsEnum, IsNotEmpty, Length, MaxLength} from "class-validator";
 import {Duty} from "./Duty";
 
@@ -25,10 +24,6 @@ export class Worker extends BaseEntity{
     @Column({type:"varchar", nullable:false})
     password:string;
 
-    @IsEnum(StatusEnum)
-    @Column({default: StatusEnum.READY})
-    status:string;
-
     @OneToMany(type => Duty, duty => duty.worker)
     duties:Duty[];
 
@@ -37,8 +32,7 @@ export class Worker extends BaseEntity{
                 "id=[" + this.id + "]," +
                 "name=[" + this.name + "]," +
                 "email=[" + this.email + "]," +
-                "password=[" + this.password + "]," +
-                "status=[" + this.status + "]," +
+                "password=[" + this.password + "]" +
                 "}"
     }
 }
