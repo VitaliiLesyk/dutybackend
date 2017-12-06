@@ -18,14 +18,14 @@ export class DutyController{
     }
 
     @Get("/getByWorkerId/:workerId")
-    public getByWorkerId(@Param("workerId") workerId: number): Promise<Duty[]>{
+    public getByWorkerId(@Param("workerId") workerId: number):Promise<Duty>{
         console.log("GET request: to get duties by workerId=[" + workerId + "]");
         return this.dutyService.getByWorkerId(workerId);
     }
 
     @Get("/getByDate/:date")
-    public getByDate(@Param("date") date:Date): Promise<Duty>{
-        console.log("GET request: to get duty by date=[" + date.toString("d-M-yyyy") + "]");
+    public getByDate(@Param("date") date:Date):Promise<Duty>{
+        console.log("GET request: to get duty by date=[" + date.toString("yyyy-MM-dd") + "]");
         return this.dutyService.getByDate(date);
     }
 }

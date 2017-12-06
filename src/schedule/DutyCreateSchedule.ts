@@ -9,7 +9,7 @@ export class DutyCreateSchedule{
 
     constructor(dutyService:DutyService){
         this.job = new CronJob({
-            cronTime: "00 00 00 * * 0-6",
+            cronTime: "00 00 00 * * 1", //every monday at 00:00:00
             onTick: ()=>{
                 this.tick();
             },
@@ -20,18 +20,19 @@ export class DutyCreateSchedule{
     }
 
     private tick():void{
-        let today:Date = Date.today();
 
-        console.log("DutyCreateSchedule: tick method to create new duty on date=[" + today.toString("d-M-yyyy") + "]");
+        console.log("DutyCreateSchedule: tick method to create new duty on date=[" + Date.today().toString("d-M-yyyy") + "]");
 
-        this.dutyService.getByDate(today).then(found=>{
+        this.dutyService.getByDate(Date.today()).then(found=>{
             if(typeof found !== 'undefined') {
-                this.dutyService.createOneByWorker(found.worker);
+                let worker = found.getWorker();
+                this.dutyService.deleteByWorkerId(worker.getId());
+                this.dutyService.createOneByWorker(worker);
             }
         });
     }
 
-    public start(){
+    public start():void{
         if(typeof this.job.running === 'undefined') {
             this.job.start();
             console.log("DutyCreateSchedule: job started!");

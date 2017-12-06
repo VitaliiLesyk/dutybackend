@@ -2,7 +2,7 @@ import {WorkerService} from '../services/WorkerService';
 import {Body, Delete, Get, JsonController, Param, Post, Put} from "routing-controllers";
 import {Worker} from "../models/Worker";
 
-@JsonController("/workers")
+@JsonController("/worker")
 export class WorkerController{
     private workerService:WorkerService;
 
@@ -11,25 +11,25 @@ export class WorkerController{
     }
 
     @Post("/add")
-    public add(@Body() worker:Worker) : Promise<Worker>{
+    public add(@Body() worker:Worker):Promise<Worker>{
         console.log("POST request to add one worker " + worker);
         return this.workerService.add(worker);
     }
 
     @Get("/get")
-    public getAll() : Promise<Worker[]>{
+    public getAll():Promise<Worker[]>{
         console.log("GET request to get all workers");
         return this.workerService.getAll();
     }
 
     @Get("/get/:id")
-    public getOne(@Param("id") id:number) : Promise<Worker>{
+    public getOne(@Param("id") id:number):Promise<Worker>{
         console.log("GET request to get one worker by id=[" + id + "]");
         return this.workerService.getOne(id);
     }
 
     @Put("/update")
-    public update(@Body() worker:Worker) : Promise<Worker>{
+    public update(@Body() worker:Worker):Promise<Worker>{
         console.log("PUT request to update worker " + worker);
         return this.workerService.update(worker);
     }

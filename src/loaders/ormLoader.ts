@@ -29,7 +29,8 @@ export const ormLoader: MicroframeworkLoader = async (settings: MicroframeworkSe
             "migrationsDir": "dist/migration",
             "subscribersDir": "dist/subscriber"
         },
-        dropSchema: true
+        dropSchema: true,
+        timezone: 'local'
     });
 
     if (settings) {

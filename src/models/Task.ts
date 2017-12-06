@@ -5,15 +5,39 @@ import {IsNotEmpty, MaxLength} from "class-validator";
 @Entity()
 export class Task extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id: number;
+    private id: number;
 
     @IsNotEmpty({message:"Field name should be not empty!"})
     @MaxLength(20,{message:"Name should have max size=[20]"})
     @Column({type:"varchar", nullable:false})
-    name:string;
+    private name:string;
 
     @Column({type:"varchar", nullable:true})
-    description:string;
+    private description:string;
+
+    public setId(id:number):void{
+        this.id = id;
+    }
+
+    public getId():number{
+        return this.id;
+    }
+
+    public setName(name:string):void{
+        this.name = name;
+    }
+
+    public getName():string{
+        return this.name;
+    }
+
+    public setDescription(description:string):void{
+        this.description = description;
+    }
+
+    public getDescription():string{
+        return this.description;
+    }
 
     public toString():string{
         return "Task:{" +

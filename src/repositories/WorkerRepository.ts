@@ -1,14 +1,15 @@
 import {Repository} from "typeorm";
 import {Worker} from "../models/Worker";
 import {EntityRepository} from "typeorm/decorator/EntityRepository";
+import {Duty} from "../models/Duty";
 
 @EntityRepository(Worker)
 export class WorkerRepository extends Repository<Worker>{
-    public findOneByEmailAndPassword(email:string, password:string): Promise<Worker>{
-        return this.createQueryBuilder("worker")
-            .select()
-            .from(Worker, "worker")
-            .where("worker.email LIKE :email AND worker.password LIKE :password", {email: email, password:password})
-            .getOne();
+    public findOneById(id:number):Promise<Worker>{
+        return this.findOne({where:{id:id}});
+    }
+
+    public findOneByDuty(duty:Duty):Promise<Worker>{
+        return this.findOne({where: {duty: duty}});
     }
 }

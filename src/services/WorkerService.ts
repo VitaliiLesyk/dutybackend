@@ -3,7 +3,6 @@ import {Worker} from "../models/Worker";
 import {WorkerRepository} from "../repositories/WorkerRepository";
 import {OrmRepository} from "typeorm-typedi-extensions";
 import {DutyService} from "./DutyService";
-import {Duty} from "../models/Duty";
 import {IdError} from "../errors/IdError";
 
 @Service()
@@ -20,7 +19,7 @@ export class WorkerService {
     public add(worker: Worker):Promise<Worker> {
         console.log("WorkerService: to add one worker");
 
-        if(!this.idIsNull(worker.id))
+        if(!this.idIsNull(worker.getId()))
             throw new IdError("Id field should be empty");
 
         return this.workerRepository.save(worker).then(added=> {
@@ -29,10 +28,6 @@ export class WorkerService {
         });
     }
 
-        private idIsNull(id:number):boolean{
-            return id === null || typeof id === 'undefined';
-        }
-
     public getAll():Promise<Worker[]> {
         console.log("WorkerService: to get all workers");
         return this.workerRepository.find();
@@ -40,16 +35,16 @@ export class WorkerService {
 
     public getOne(id: number):Promise<Worker> {
         console.log("WorkerService: to get one worker by id=[" + id + "]");
-        return this.workerRepository.findOne({where:{id:id}});
+        return this.workerRepository.findOneById(id);
     }
 
     public update(worker: Worker):Promise<Worker>{
         console.log("WorkerService: to update worker " + worker);
 
-        if(this.idIsNull(worker.id))
+        if(this.idIsNull(worker.getId()))
             throw new IdError("Id field should not be empty");
 
-        return this.workerRepository.findOne({where:{id:worker.id}}).then(found=>{
+        return this.workerRepository.findOneById(worker.getId()).then(found=>{
             if(typeof found !== 'undefined'){
                 return this.workerRepository.save(worker);
             }
@@ -58,8 +53,8 @@ export class WorkerService {
 
     public deleteById(id: number):Promise<Worker>{
         console.log("WorkerService: to delete worker by id=[" + id + "]");
-        return this.workerRepository.findOne({where:{id:id}}).then((found)=>{
-            this.dutyService.deleteAllByWorkerId(id);
+        return this.workerRepository.findOneById(id).then((found)=>{
+            this.dutyService.deleteByWorkerId(id);
             this.workerRepository.delete(id);
             return found;
         });
@@ -67,7 +62,12 @@ export class WorkerService {
 
     public getByCurrentDuty():Promise<Worker> {
         console.log("WorkerService: to get by current duty");
-        let currentDuty: Promise<Duty> = this.dutyService.getCurrentDuty();
-        return this.workerRepository.findOne({where: {duty: currentDuty}});
+        return this.dutyService.getCurrentDuty().then(currentDuty=>{
+            return this.workerRepository.findOneByDuty(currentDuty);
+        });
+    }
+
+    private idIsNull(id:number):boolean{
+        return id === null || typeof id === 'undefined';
     }
 }
