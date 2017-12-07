@@ -12,4 +12,11 @@ export class WorkerRepository extends Repository<Worker>{
     public findOneByDuty(duty:Duty):Promise<Worker>{
         return this.findOne({where: {duty: duty}});
     }
+
+    public findAllOrderByDutyDate():Promise<Worker[]>{
+        return this.createQueryBuilder('worker')
+            .leftJoin('worker.duty', 'duty')
+            .orderBy('duty.startDate')
+            .getMany();
+    }
 }

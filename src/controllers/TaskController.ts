@@ -2,7 +2,7 @@ import {Body, Delete, Get, JsonController, Post, Put, Param} from 'routing-contr
 import {Task} from "../models/Task";
 import {TaskService} from "../services/TaskService";
 
-@JsonController("/tasks")
+@JsonController("/task")
 export class TaskController{
 
     private taskService: TaskService;

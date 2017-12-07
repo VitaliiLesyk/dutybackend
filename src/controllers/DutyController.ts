@@ -28,4 +28,11 @@ export class DutyController{
         console.log("GET request: to get duty by date=[" + date.toString("yyyy-MM-dd") + "]");
         return this.dutyService.getByDate(date);
     }
+
+    @Get("/swap/:id1/and/:id2")
+    public swapByWorkerIds(@Param("id1") workerId1: number,
+                  @Param("id2") workerId2: number):Promise<Duty[]>{
+        console.log("GET request to change duty of worker1(id=[" + workerId1 + "]) with worker2(id=[" + workerId2 + "])");
+        return this.dutyService.swapByWorkerIds(workerId1, workerId2);
+    }
 }

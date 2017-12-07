@@ -30,7 +30,7 @@ export class WorkerController{
 
     @Put("/update")
     public update(@Body() worker:Worker):Promise<Worker>{
-        console.log("PUT request to update worker " + worker);
+            console.log("PUT request to update worker " + worker);
         return this.workerService.update(worker);
     }
 

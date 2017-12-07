@@ -22,8 +22,8 @@ export class Worker extends BaseEntity{
     @Column({type:"varchar", nullable:false})
     private password:string;
 
-    @OneToOne(type => Duty, duty => duty.getWorker)
-    private duty:Duty;
+    @OneToOne(type => Duty, duty => duty.worker)
+    duty:Duty;
 
     public setId(id:number):void{
         this.id = id;

@@ -30,7 +30,7 @@ export class WorkerService {
 
     public getAll():Promise<Worker[]> {
         console.log("WorkerService: to get all workers");
-        return this.workerRepository.find();
+        return this.workerRepository.findAllOrderByDutyDate();
     }
 
     public getOne(id: number):Promise<Worker> {
@@ -54,8 +54,9 @@ export class WorkerService {
     public deleteById(id: number):Promise<Worker>{
         console.log("WorkerService: to delete worker by id=[" + id + "]");
         return this.workerRepository.findOneById(id).then((found)=>{
-            this.dutyService.deleteByWorkerId(id);
-            this.workerRepository.delete(id);
+            this.dutyService.deleteByWorkerId(id).then(()=>{
+                this.workerRepository.delete(id);
+            });
             return found;
         });
     }
@@ -67,7 +68,7 @@ export class WorkerService {
         });
     }
 
-    private idIsNull(id:number):boolean{
+    private idIsNull(id: number): boolean {
         return id === null || typeof id === 'undefined';
     }
 }

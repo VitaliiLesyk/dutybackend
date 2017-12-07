@@ -14,9 +14,9 @@ export class Duty extends BaseEntity{
     @Column({type:"date", nullable:false})
     private overDate:Date;
 
-    @OneToOne(type => Worker, worker => worker.getDuty)
+    @OneToOne(type => Worker, worker => worker.duty)
     @JoinColumn()
-    private worker:Worker;
+    worker:Worker;
 
     public static readonly DUTY_DAYS_NUMBER: number = 7;
 

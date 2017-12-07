@@ -20,6 +20,17 @@ export class DutyRepository extends Repository<Duty>{
     }
 
     public findByWorkerId(workerId:number):Promise<Duty>{
-        return this.findOne({where: {workerId: workerId}});
+        return this.createQueryBuilder("duty")
+            .select()
+            .where("duty.workerId = :workerId", {workerId: workerId})
+            .getOne();
+    }
+
+    public findTwoByWorkerIds(workerId1:number, workerId2:number):Promise<Duty[]>{
+        return this.createQueryBuilder("duty")
+            .select()
+            .where("duty.workerId = :workerId1", {workerId1: workerId1})
+            .orWhere("duty.workerId = :workerId2", {workerId2: workerId2})
+            .getMany();
     }
 }

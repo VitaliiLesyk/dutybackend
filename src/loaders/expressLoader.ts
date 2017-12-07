@@ -17,7 +17,6 @@ export const expressLoader: MicroframeworkLoader = (settings: MicroframeworkSett
             defaultErrorHandler: false,
             controllers: [TaskController, WorkerController, DutyController],
             middlewares: [ErrorHandlerMiddleware, CompressionMiddleware, SecurityMiddleware, SecurityHstsMiddleware, SecurityNoCacheMiddleware]
-
         });
 
         expressApp.listen(8456);

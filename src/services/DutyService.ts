@@ -50,8 +50,10 @@ export class DutyService {
     }
 
     public getByWorkerId(workerId: number):Promise<Duty> {
-        console.log("DutyService: to get duties by workerId=[" + workerId + "]");
-        return this.dutyRepository.findByWorkerId(workerId);
+        console.log("DutyService: to get duty by workerId=[" + workerId + "]");
+        return this.dutyRepository.findByWorkerId(workerId).then(found=>{
+            return found;
+        });
     }
 
     public getByDate(date: Date):Promise<Duty> {
@@ -64,13 +66,13 @@ export class DutyService {
         return this.dutyRepository.findByDate(Date.today());
     }
 
-    public deleteByWorkerId(workerId: number) {
+    public deleteByWorkerId(workerId: number):Promise<void>{
         console.log("DutyService: delete by worker id=[" + workerId + "]");
-        this.dutyRepository.findByWorkerId(workerId).then(deleted =>{
+        return this.dutyRepository.findByWorkerId(workerId).then(deleted =>{
             this.dutyRepository.deleteByWorkerId(workerId);
             let oldStartDate = deleted.getStartDate();
-            this.dutyRepository.find().then(found=>{
-                this.findDutyAndChange(found, oldStartDate);
+            return this.dutyRepository.find().then(found=>{
+                return this.findDutyAndChange(found, oldStartDate);
             });
         });
     }
@@ -93,5 +95,27 @@ export class DutyService {
             duty.setOverDate(newOverDate);
 
             this.dutyRepository.save(duty);
+        }
+
+    public swapByWorkerIds(workerId1:number, workerId2:number):Promise<Duty[]>{
+        console.log("DutyService: to change duties by workerId1=[" + workerId1 + "] and workerId2=[" + workerId2 + "]");
+        return this.dutyRepository.findTwoByWorkerIds(workerId1, workerId2).then(found=>{
+            if(typeof found[0] !== 'undefined' && typeof found[1] !== 'undefined'){
+                this.swapDates(found[0], found[1]);
+                this.dutyRepository.save(found[0]);
+                this.dutyRepository.save(found[1]);
+                return found;
+            }
+        });
+    }
+
+        private swapDates(duty1:Duty, duty2:Duty){
+            let startDateForChange: Date = new Date(duty1.getStartDate());
+            duty1.setStartDate(duty2.getStartDate());
+            duty2.setStartDate(startDateForChange);
+
+            let overDateForChange:Date = new Date(duty1.getOverDate());
+            duty1.setOverDate(duty2.getOverDate());
+            duty2.setOverDate(overDateForChange);
         }
 }
