@@ -18,13 +18,16 @@ export class DutyService {
         this.dutyRepository = dutyRepository;
     }
 
-    public createOneByWorker(worker: Worker):void{
-        console.log("DutyService : to create one duty by " + worker);
-        this.workerRepository.find().then(found => {
-            let workersNumber: number = found.length - 1;
-            let startDate = this.createStartDate(workersNumber);
-            let duty: Duty = this.createDuty(worker, startDate);
-            this.dutyRepository.save(duty);
+    public createOneByWorker(worker: Worker, justSaved:boolean):Promise<Duty>{
+        console.log("DutyService to create one duty by " + worker);
+        return this.workerRepository.findAndCount().then(([found, count]) => {
+            if(justSaved)
+                count--;
+            let startDate:Date = this.createStartDate(count);
+            let overDate = this.createOverDate(startDate);
+            return this.createDuty(worker, startDate, overDate).then(created=>{
+                return this.dutyRepository.save(created);
+            });
         });
     }
 
@@ -34,14 +37,29 @@ export class DutyService {
             return today.addDays(1-dayOfWeek).addWeeks(weeksToAdd);
         }
 
-        private createDuty(worker: Worker, startDate: Date): Duty {
-            let duty: Duty = new Duty();
+        private createOverDate(startDate: Date):Date{
             let overDate = new Date(startDate);
-            overDate.addDays(Duty.DUTY_DAYS_NUMBER - 1);
-            duty.setStartDate(startDate);
-            duty.setOverDate(overDate);
-            duty.setWorker(worker);
-            return duty;
+            overDate = overDate.addDays(Duty.DUTY_DAYS_NUMBER - 1);
+            return overDate;
+        }
+
+        private createDuty(worker: Worker, startDate: Date, overDate:Date): Promise<Duty> {
+            let duty:Duty = new Duty();
+            return this.checkIfDutyExists(worker.getId()).then(id=>{
+                duty.setId(id);
+                duty.setStartDate(startDate);
+                duty.setOverDate(overDate);
+                duty.setWorker(worker);
+                return duty;
+            });
+        }
+
+        private checkIfDutyExists(workerId:number) : Promise<number | null>{
+            return this.dutyRepository.findByWorkerId(workerId).then(found=>{
+                if(found !== null && typeof found !== 'undefined')
+                    return found.getId();
+                return null;
+            });
         }
 
     public getAll():Promise<Duty[]> {
@@ -51,9 +69,7 @@ export class DutyService {
 
     public getByWorkerId(workerId: number):Promise<Duty> {
         console.log("DutyService: to get duty by workerId=[" + workerId + "]");
-        return this.dutyRepository.findByWorkerId(workerId).then(found=>{
-            return found;
-        });
+        return this.dutyRepository.findByWorkerId(workerId);
     }
 
     public getByDate(date: Date):Promise<Duty> {
@@ -66,26 +82,24 @@ export class DutyService {
         return this.dutyRepository.findByDate(Date.today());
     }
 
-    public deleteByWorkerId(workerId: number):Promise<void>{
+    public deleteByWorkerId(workerId: number):Promise<Duty>{
         console.log("DutyService: delete by worker id=[" + workerId + "]");
-        return this.dutyRepository.findByWorkerId(workerId).then(deleted =>{
-            this.dutyRepository.deleteByWorkerId(workerId);
-            let oldStartDate = deleted.getStartDate();
-            return this.dutyRepository.find().then(found=>{
-                return this.findDutyAndChange(found, oldStartDate);
+        return this.dutyRepository.deleteByWorkerIdAndReturn(workerId).then(deleted =>{
+            let deletedStartDate = deleted.getStartDate();
+            return this.dutyRepository.findAllAfterDate(deletedStartDate).then(found=>{
+                this.changeDuties(found);
+                return deleted;
             });
         });
     }
 
-        private findDutyAndChange(duties:Duty[], oldDate: Date):void{
+        private changeDuties(duties:Duty[]):void{
             for(let i:number = 0;i<duties.length;i++){
-                if(duties[i].getStartDate() > oldDate){
-                    this.changeDuty(duties[i]);
-                }
+                this.dutyRepository.save(this.subtractDaysConstantFromDutyDates(duties[i]));
             }
         }
 
-        private changeDuty(duty: Duty):void{
+        private subtractDaysConstantFromDutyDates(duty: Duty):Duty{
             let newStartDate:Date = new Date(duty.getStartDate());
             newStartDate.addDays(-Duty.DUTY_DAYS_NUMBER);
             duty.setStartDate(newStartDate);
@@ -94,14 +108,14 @@ export class DutyService {
             newOverDate.addDays(-Duty.DUTY_DAYS_NUMBER);
             duty.setOverDate(newOverDate);
 
-            this.dutyRepository.save(duty);
+            return duty;
         }
 
     public swapByWorkerIds(workerId1:number, workerId2:number):Promise<Duty[]>{
         console.log("DutyService: to change duties by workerId1=[" + workerId1 + "] and workerId2=[" + workerId2 + "]");
         return this.dutyRepository.findTwoByWorkerIds(workerId1, workerId2).then(found=>{
             if(typeof found[0] !== 'undefined' && typeof found[1] !== 'undefined'){
-                this.swapDates(found[0], found[1]);
+                this.swapDutiesDates(found[0], found[1]);
                 this.dutyRepository.save(found[0]);
                 this.dutyRepository.save(found[1]);
                 return found;
@@ -109,7 +123,7 @@ export class DutyService {
         });
     }
 
-        private swapDates(duty1:Duty, duty2:Duty){
+        private swapDutiesDates(duty1:Duty, duty2:Duty){
             let startDateForChange: Date = new Date(duty1.getStartDate());
             duty1.setStartDate(duty2.getStartDate());
             duty2.setStartDate(startDateForChange);

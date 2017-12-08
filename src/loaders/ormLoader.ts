@@ -3,6 +3,7 @@ import {createConnection} from "typeorm";
 import {DutyService} from "../services/DutyService";
 import {Container} from "typedi";
 import {DutyCreateSchedule} from "../schedule/DutyCreateSchedule";
+import {WorkerService} from "../services/WorkerService";
 
 export const ormLoader: MicroframeworkLoader = async (settings: MicroframeworkSettings | undefined) => {
 
@@ -44,6 +45,7 @@ export const ormLoader: MicroframeworkLoader = async (settings: MicroframeworkSe
 function createAndStartDutySchedule(){
     console.log("ormLoader: createAndStartDutySchedule method to create and start duty schedule");
     let dutyService: DutyService = Container.get<DutyService>(DutyService);
-    let dutySchedule:DutyCreateSchedule = new DutyCreateSchedule(dutyService);
+    let workerService: WorkerService = Container.get<WorkerService>(WorkerService);
+    let dutySchedule:DutyCreateSchedule = new DutyCreateSchedule(workerService, dutyService);
     dutySchedule.start();
 }

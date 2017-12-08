@@ -10,7 +10,11 @@ export class WorkerRepository extends Repository<Worker>{
     }
 
     public findOneByDuty(duty:Duty):Promise<Worker>{
-        return this.findOne({where: {duty: duty}});
+        return this.createQueryBuilder('worker')
+            .leftJoin('worker.duty', 'duty')
+            .select()
+            .where('duty.id = :id', {id: duty.getId()})
+            .getOne();
     }
 
     public findAllOrderByDutyDate():Promise<Worker[]>{
@@ -18,5 +22,12 @@ export class WorkerRepository extends Repository<Worker>{
             .leftJoin('worker.duty', 'duty')
             .orderBy('duty.startDate')
             .getMany();
+    }
+
+    public deleteByIdAndReturn(id:number):Promise<Worker>{
+        return this.findOneById(id).then(found=>{
+            this.delete(id);
+            return found;
+        });
     }
 }

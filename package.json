@@ -47,6 +47,6 @@
     "debug:dev": "node %NODE_DEBUG_OPTION% ./dist/main.js",
     "clean": "del-cli dist/**/*.js && del-cli dist/**/*.js.map",
     "build": "tsc",
-    "start": "npm run clean && npm run build && node ./dist/main.js"
+    "start": "npm run clean && npm run build && node --stack_size=10000 ./dist/main.js"
   }
 }

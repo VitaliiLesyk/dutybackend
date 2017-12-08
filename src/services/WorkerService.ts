@@ -18,13 +18,14 @@ export class WorkerService {
 
     public add(worker: Worker):Promise<Worker> {
         console.log("WorkerService: to add one worker");
-
         if(!this.idIsNull(worker.getId()))
             throw new IdError("Id field should be empty");
-
         return this.workerRepository.save(worker).then(added=> {
-            this.dutyService.createOneByWorker(added);
-            return added;
+            return this.dutyService.createOneByWorker(added, true).then(created=>{
+                created.setWorker(null);
+                added.setDuty(created);
+                return added;
+            });
         });
     }
 
@@ -40,10 +41,8 @@ export class WorkerService {
 
     public update(worker: Worker):Promise<Worker>{
         console.log("WorkerService: to update worker " + worker);
-
         if(this.idIsNull(worker.getId()))
             throw new IdError("Id field should not be empty");
-
         return this.workerRepository.findOneById(worker.getId()).then(found=>{
             if(typeof found !== 'undefined'){
                 return this.workerRepository.save(worker);
@@ -53,18 +52,23 @@ export class WorkerService {
 
     public deleteById(id: number):Promise<Worker>{
         console.log("WorkerService: to delete worker by id=[" + id + "]");
-        return this.workerRepository.findOneById(id).then((found)=>{
-            this.dutyService.deleteByWorkerId(id).then(()=>{
-                this.workerRepository.delete(id);
+        return this.dutyService.deleteByWorkerId(id).then((deletedDuty)=>{
+            return this.workerRepository.deleteByIdAndReturn(id).then(deleted=>{
+                deletedDuty.setWorker(null);
+                deleted.setDuty(deletedDuty);
+                return deleted;
             });
-            return found;
         });
     }
 
     public getByCurrentDuty():Promise<Worker> {
         console.log("WorkerService: to get by current duty");
         return this.dutyService.getCurrentDuty().then(currentDuty=>{
-            return this.workerRepository.findOneByDuty(currentDuty);
+            return this.workerRepository.findOneByDuty(currentDuty).then(found=>{
+                currentDuty.setWorker(null);
+                found.setDuty(currentDuty);
+                return found;
+            });
         });
     }
 

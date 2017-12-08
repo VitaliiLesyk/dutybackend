@@ -1,15 +1,18 @@
 import {CronJob} from "cron";
 import {DutyService} from "../services/DutyService";
 import "datejs";
+import {WorkerService} from "../services/WorkerService";
 
 export class DutyCreateSchedule{
 
     private job:CronJob;
     private dutyService:DutyService;
+    private workerService:WorkerService;
 
-    constructor(dutyService:DutyService){
+    constructor(workerService:WorkerService,
+                dutyService:DutyService){
         this.job = new CronJob({
-            cronTime: "00 00 00 * * 1", //every monday at 00:00:00
+            cronTime: "00 00 21 * * 0", //every sunday at 21:00:00
             onTick: ()=>{
                 this.tick();
             },
@@ -17,17 +20,14 @@ export class DutyCreateSchedule{
             timeZone: 'Europe/Warsaw'
         });
         this.dutyService = dutyService;
+        this.workerService = workerService;
     }
 
     private tick():void{
-
         console.log("DutyCreateSchedule: tick method to create new duty on date=[" + Date.today().toString("d-M-yyyy") + "]");
-
-        this.dutyService.getByDate(Date.today()).then(found=>{
+        this.workerService.getByCurrentDuty().then(found=>{
             if(typeof found !== 'undefined') {
-                let worker = found.getWorker();
-                this.dutyService.deleteByWorkerId(worker.getId());
-                this.dutyService.createOneByWorker(worker);
+                this.dutyService.createOneByWorker(found, false);
             }
         });
     }
