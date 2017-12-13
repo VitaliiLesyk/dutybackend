@@ -4,6 +4,7 @@ import {Worker} from "../models/Worker";
 import {DutyRepository} from "../repositories/DutyRepository";
 import {OrmRepository} from "typeorm-typedi-extensions";
 import {WorkerRepository} from "../repositories/WorkerRepository";
+import {DutyStatus} from "../enums/DutyStatus";
 
 
 @Service()
@@ -19,13 +20,16 @@ export class DutyService {
     }
 
     public createOneByWorker(worker: Worker, justSaved:boolean):Promise<Duty>{
-        console.log("DutyService to create one duty by " + worker);
-        return this.workerRepository.findAndCount().then(([found, count]) => {
+        console.log("DutyService to create one duties by " + worker);
+        return this.workerRepository.findAllWithStatusReadyAndCount().then(count => {
             if(justSaved)
                 count--;
             let startDate:Date = this.createStartDate(count);
             let overDate = this.createOverDate(startDate);
-            return this.createDuty(worker, startDate, overDate).then(created=>{
+            return this.dutyRepository.findOneWithStatusReadyByWorkerId(worker.getId()).then(found=>{
+                if(typeof found !== 'undefined')
+                    this.changeStatusToPassedAndSave(found);
+                let created = this.createNewDuty(worker, startDate, overDate);
                 return this.dutyRepository.save(created);
             });
         });
@@ -43,23 +47,18 @@ export class DutyService {
             return overDate;
         }
 
-        private createDuty(worker: Worker, startDate: Date, overDate:Date): Promise<Duty> {
+        private createNewDuty(worker: Worker, startDate: Date, overDate:Date): Duty {
             let duty:Duty = new Duty();
-            return this.checkIfDutyExists(worker.getId()).then(id=>{
-                duty.setId(id);
-                duty.setStartDate(startDate);
-                duty.setOverDate(overDate);
-                duty.setWorker(worker);
-                return duty;
-            });
+            duty.setStartDate(startDate);
+            duty.setOverDate(overDate);
+            duty.setWorker(worker);
+            duty.setStatus(DutyStatus.READY);
+            return duty;
         }
 
-        private checkIfDutyExists(workerId:number) : Promise<number | null>{
-            return this.dutyRepository.findByWorkerId(workerId).then(found=>{
-                if(found !== null && typeof found !== 'undefined')
-                    return found.getId();
-                return null;
-            });
+        private changeStatusToPassedAndSave(duty:Duty) {
+            duty.setStatus(DutyStatus.PASSED);
+            this.dutyRepository.save(duty);
         }
 
     public getAll():Promise<Duty[]> {
@@ -67,26 +66,26 @@ export class DutyService {
         return this.dutyRepository.find();
     }
 
-    public getByWorkerId(workerId: number):Promise<Duty> {
-        console.log("DutyService: to get duty by workerId=[" + workerId + "]");
-        return this.dutyRepository.findByWorkerId(workerId);
+    public getByWorkerId(workerId: number):Promise<Duty[]> {
+        console.log("DutyService: to get duties by workerId=[" + workerId + "]");
+        return this.dutyRepository.findAllByWorkerId(workerId);
     }
 
     public getByDate(date: Date):Promise<Duty> {
-        console.log("DutyService: to get duty by date=[" + date.toString("yyyy-MM-dd") + "]");
+        console.log("DutyService: to get duties by date=[" + date.toString("yyyy-MM-dd") + "]");
         return this.dutyRepository.findByDate(date);
     }
 
-    public getCurrentDuty():Promise<Duty> {
-        console.log("DutyService: to get current duty");
+    public getOneByCurrentDate():Promise<Duty> {
+        console.log("DutyService: to get current duties");
         return this.dutyRepository.findByDate(Date.today());
     }
 
     public deleteByWorkerId(workerId: number):Promise<Duty>{
         console.log("DutyService: delete by worker id=[" + workerId + "]");
-        return this.dutyRepository.deleteByWorkerIdAndReturn(workerId).then(deleted =>{
+        return this.dutyRepository.deleteWithStatusReadyByWorkerIdAndReturn(workerId).then(deleted =>{
             let deletedStartDate = deleted.getStartDate();
-            return this.dutyRepository.findAllAfterDate(deletedStartDate).then(found=>{
+            return this.dutyRepository.findAllWithStatusReadyAfterDate(deletedStartDate).then(found=> {
                 this.changeDuties(found);
                 return deleted;
             });
@@ -111,9 +110,9 @@ export class DutyService {
             return duty;
         }
 
-    public swapByWorkerIds(workerId1:number, workerId2:number):Promise<Duty[]>{
+    public swapWithStatusReadyByWorkerIds(workerId1:number, workerId2:number):Promise<Duty[]>{
         console.log("DutyService: to change duties by workerId1=[" + workerId1 + "] and workerId2=[" + workerId2 + "]");
-        return this.dutyRepository.findTwoByWorkerIds(workerId1, workerId2).then(found=>{
+        return this.dutyRepository.findTwoWithStatusReadyByWorkersIds(workerId1, workerId2).then(found=>{
             if(typeof found[0] !== 'undefined' && typeof found[1] !== 'undefined'){
                 this.swapDutiesDates(found[0], found[1]);
                 this.dutyRepository.save(found[0]);

@@ -42,7 +42,7 @@ export class WorkerController{
 
     @Get("/getByCurrentDuty")
     public getByCurrentDuty():Promise<Worker>{
-        console.log("GET request to get worker by current duty");
-        return this.workerService.getByCurrentDuty();
+        console.log("GET request to get worker by current duties");
+        return this.workerService.getByCurrentDateDuty();
     }
 }

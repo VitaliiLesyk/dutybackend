@@ -24,8 +24,8 @@ export class DutyCreateSchedule{
     }
 
     private tick():void{
-        console.log("DutyCreateSchedule: tick method to create new duty on date=[" + Date.today().toString("d-M-yyyy") + "]");
-        this.workerService.getByCurrentDuty().then(found=>{
+        console.log("DutyCreateSchedule: tick method to create new duties on date=[" + Date.today().toString("d-M-yyyy") + "]");
+        this.workerService.getByCurrentDateDuty().then(found=>{
             if(typeof found !== 'undefined') {
                 this.dutyService.createOneByWorker(found, false);
             }

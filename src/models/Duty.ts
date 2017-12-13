@@ -1,6 +1,7 @@
 import {Entity} from "typeorm/decorator/entity/Entity";
-import {BaseEntity, Column, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import {Worker} from "./Worker";
+import {DutyStatus} from "../enums/DutyStatus";
 
 @Entity()
 export class Duty extends BaseEntity{
@@ -8,13 +9,16 @@ export class Duty extends BaseEntity{
     @PrimaryGeneratedColumn()
     private id:number;
 
-    @Column({type:"date", nullable: false})
+    @Column({'type':"date", 'nullable': false})
     private startDate:Date;
 
-    @Column({type:"date", nullable:false})
+    @Column({'type':"date", 'nullable':false})
     private overDate:Date;
 
-    @OneToOne(type => Worker, worker => worker.duty)
+    @Column({'type': "enum", 'enum': DutyStatus, 'default': DutyStatus.READY})
+    private status: DutyStatus;
+
+    @ManyToOne(type => Worker, worker => worker.duties)
     @JoinColumn()
     worker:Worker;
 
@@ -43,6 +47,12 @@ export class Duty extends BaseEntity{
     }
     public getWorker():Worker{
         return this.worker;
+    }
+    public setStatus(status: DutyStatus):void{
+        this.status = status;
+    }
+    public isPassed():boolean{
+        return this.status === DutyStatus.PASSED;
     }
     public toString():string{
         return "Duty:{ " +

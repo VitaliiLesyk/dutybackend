@@ -4,6 +4,7 @@ import {WorkerRepository} from "../repositories/WorkerRepository";
 import {OrmRepository} from "typeorm-typedi-extensions";
 import {DutyService} from "./DutyService";
 import {IdError} from "../errors/IdError";
+import {WorkerStatus} from "../enums/WorkerStatus";
 
 @Service()
 export class WorkerService {
@@ -22,8 +23,6 @@ export class WorkerService {
             throw new IdError("Id field should be empty");
         return this.workerRepository.save(worker).then(added=> {
             return this.dutyService.createOneByWorker(added, true).then(created=>{
-                created.setWorker(null);
-                added.setDuty(created);
                 return added;
             });
         });
@@ -31,7 +30,7 @@ export class WorkerService {
 
     public getAll():Promise<Worker[]> {
         console.log("WorkerService: to get all workers");
-        return this.workerRepository.findAllOrderByDutyDate();
+        return this.workerRepository.findAllOrderByDutyDateWithDutyStatusReady();
     }
 
     public getOne(id: number):Promise<Worker> {
@@ -49,30 +48,33 @@ export class WorkerService {
             }
         });
     }
-
     public deleteById(id: number):Promise<Worker>{
         console.log("WorkerService: to delete worker by id=[" + id + "]");
-        return this.dutyService.deleteByWorkerId(id).then((deletedDuty)=>{
-            return this.workerRepository.deleteByIdAndReturn(id).then(deleted=>{
-                deletedDuty.setWorker(null);
-                deleted.setDuty(deletedDuty);
-                return deleted;
+        return this.dutyService.deleteByWorkerId(id).then(deleted =>{
+            return this.workerRepository.findOneById(id).then(found =>{
+                if(this.workerHasPassedDuty(found)) {
+                    found.setStatus(WorkerStatus.FIRED);
+                    return this.workerRepository.save(found);
+                }
+                return this.workerRepository.deleteByIdAndReturn(id);
             });
         });
     }
-
-    public getByCurrentDuty():Promise<Worker> {
-        console.log("WorkerService: to get by current duty");
-        return this.dutyService.getCurrentDuty().then(currentDuty=>{
+    public getByCurrentDateDuty():Promise<Worker> {
+        console.log("WorkerService: to get by current duties");
+        return this.dutyService.getOneByCurrentDate().then(currentDuty=>{
             return this.workerRepository.findOneByDuty(currentDuty).then(found=>{
-                currentDuty.setWorker(null);
-                found.setDuty(currentDuty);
                 return found;
             });
         });
     }
-
     private idIsNull(id: number): boolean {
         return id === null || typeof id === 'undefined';
+    }
+
+    private workerHasPassedDuty(worker: Worker): Promise<boolean> {
+        return this.dutyService.getByWorkerId(worker.getId()).then(found=>{
+           return found.length > 1;
+        });
     }
 }

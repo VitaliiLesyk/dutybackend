@@ -43,7 +43,7 @@ export const ormLoader: MicroframeworkLoader = async (settings: MicroframeworkSe
 };
 
 function createAndStartDutySchedule(){
-    console.log("ormLoader: createAndStartDutySchedule method to create and start duty schedule");
+    console.log("ormLoader: createAndStartDutySchedule method to create and start duties schedule");
     let dutyService: DutyService = Container.get<DutyService>(DutyService);
     let workerService: WorkerService = Container.get<WorkerService>(WorkerService);
     let dutySchedule:DutyCreateSchedule = new DutyCreateSchedule(workerService, dutyService);
