@@ -28,9 +28,14 @@ export class WorkerService {
         });
     }
 
-    public getAll():Promise<Worker[]> {
-        console.log("WorkerService: to get all workers");
-        return this.workerRepository.findAllOrderByDutyDateWithDutyStatusReady();
+    public getAllOrderedByDutyWithStatusReady():Promise<Worker[]> {
+        console.log("WorkerService: to get all workers ordered by duty with status ready");
+        return this.workerRepository.findAllWithStatusReadyOrderByDutyDateWithDutyStatusReady();
+    }
+
+    public getAllWithStatusFired():Promise<Worker[]>{
+        console.log("WorkerService: to get all workers with status fired");
+        return this.workerRepository.findAllWithStatusFired();
     }
 
     public getOne(id: number):Promise<Worker> {
@@ -73,7 +78,7 @@ export class WorkerService {
     }
 
     private workerHasPassedDuty(worker: Worker): Promise<boolean> {
-        return this.dutyService.getByWorkerId(worker.getId()).then(found=>{
+        return this.dutyService.getAllByWorkerId(worker.getId()).then(found=>{
            return found.length > 1;
         });
     }

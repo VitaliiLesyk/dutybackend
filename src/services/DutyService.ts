@@ -66,9 +66,14 @@ export class DutyService {
         return this.dutyRepository.find();
     }
 
-    public getByWorkerId(workerId: number):Promise<Duty[]> {
-        console.log("DutyService: to get duties by workerId=[" + workerId + "]");
+    public getAllByWorkerId(workerId: number):Promise<Duty[]> {
+        console.log("DutyService: to get all duties by workerId=[" + workerId + "]");
         return this.dutyRepository.findAllByWorkerId(workerId);
+    }
+
+    public getReadyByWorkerId(workerId: number):Promise<Duty>{
+        console.log("DutyService: to get duty with status ready by workerId=[" + workerId + "]");
+        return this.dutyRepository.findOneWithStatusReadyByWorkerId(workerId);
     }
 
     public getByDate(date: Date):Promise<Duty> {

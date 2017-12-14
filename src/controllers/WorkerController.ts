@@ -16,10 +16,16 @@ export class WorkerController{
         return this.workerService.add(worker);
     }
 
-    @Get("/get")
-    public getAll():Promise<Worker[]>{
-        console.log("GET request to get all workers");
-        return this.workerService.getAll();
+    @Get("/getReady")
+    public getAllOrderedByDutyWithStatusReady():Promise<Worker[]>{
+        console.log("GET request to get all workers with status ready ordered by duty with status ready");
+        return this.workerService.getAllOrderedByDutyWithStatusReady();
+    }
+
+    @Get("/getFired")
+    public getAllWithStatusFired():Promise<Worker[]>{
+        console.log("GET request to get all workers with status fired");
+        return this.workerService.getAllWithStatusFired();
     }
 
     @Get("/get/:id")

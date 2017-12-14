@@ -17,10 +17,16 @@ export class DutyController{
         return this.dutyService.getAll();
     }
 
-    @Get("/getByWorkerId/:workerId")
-    public getByWorkerId(@Param("workerId") workerId: number):Promise<Duty[]>{
-        console.log("GET request: to get duties by workerId=[" + workerId + "]");
-        return this.dutyService.getByWorkerId(workerId);
+    @Get("/getAllByWorkerId/:workerId")
+    public getAllByWorkerId(@Param("workerId") workerId: number):Promise<Duty[]>{
+        console.log("GET request: to get all duties by workerId=[" + workerId + "]");
+        return this.dutyService.getAllByWorkerId(workerId);
+    }
+
+    @Get("/getReadyByWorkerId/:workerId")
+    public getReadyByWorkerId(@Param("workerId") workerId: number):Promise<Duty>{
+        console.log("GET request: to get duty with status ready by workerId=[" + workerId + "]");
+        return this.dutyService.getReadyByWorkerId(workerId);
     }
 
     @Get("/getByDate/:date")

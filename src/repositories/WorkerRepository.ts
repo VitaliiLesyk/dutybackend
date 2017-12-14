@@ -17,11 +17,18 @@ export class WorkerRepository extends Repository<Worker>{
             .where('duties.id = :id', {id: duty.getId()})
             .getOne();
     }
-    public findAllOrderByDutyDateWithDutyStatusReady():Promise<Worker[]>{
+    public findAllWithStatusReadyOrderByDutyDateWithDutyStatusReady():Promise<Worker[]>{
         return this.createQueryBuilder('worker')
             .leftJoin('worker.duties', 'duties')
             .orderBy('duties.startDate')
             .where("duties.status = :status", {status: DutyStatus.READY})
+            .andWhere("worker.status = :status", {status: WorkerStatus.READY})
+            .getMany();
+    }
+    public findAllWithStatusFired():Promise<Worker[]>{
+        return this.createQueryBuilder('worker')
+            .select()
+            .where('worker.status = :status', {status: WorkerStatus.FIRED})
             .getMany();
     }
     public findAllWithStatusReadyAndCount():Promise<number>{
