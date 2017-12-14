@@ -40,6 +40,14 @@ export class DutyRepository extends Repository<Duty>{
             .where("duty.workerId = :workerId", {workerId: workerId})
             .getMany();
     }
+    public findPassedByWorkerId(workerId:number):Promise<Duty[]>{
+        console.log("DutyRepository to find passed by worker id=[" + workerId + "]");
+        return this.createQueryBuilder("duty")
+            .select()
+            .where("duty.workerId = :workerId", {workerId: workerId})
+            .andWhere("duty.status = :status", {status: DutyStatus.PASSED})
+            .getMany();
+    }
     public findTwoWithStatusReadyByWorkersIds(workerId1:number, workerId2:number):Promise<Duty[]>{
         console.log("DutyRepository to find two with status ready by workers ids: id1=[" + workerId1 + "], id2=[" + workerId2 + "]");
         return this.createQueryBuilder("duty")

@@ -71,6 +71,11 @@ export class DutyService {
         return this.dutyRepository.findAllByWorkerId(workerId);
     }
 
+    public getPassedByWorkerId(workerId: number):Promise<Duty[]>{
+        console.log("DutyService: to get passed duty by workerId=[" + workerId + "]");
+        return this.dutyRepository.findPassedByWorkerId(workerId);
+    }
+
     public getReadyByWorkerId(workerId: number):Promise<Duty>{
         console.log("DutyService: to get duty with status ready by workerId=[" + workerId + "]");
         return this.dutyRepository.findOneWithStatusReadyByWorkerId(workerId);

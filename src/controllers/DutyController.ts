@@ -23,6 +23,12 @@ export class DutyController{
         return this.dutyService.getAllByWorkerId(workerId);
     }
 
+    @Get("/getPassedByWorkerId/:workerId")
+    public getPassedByWorkerId(@Param("workerId") workerId: number):Promise<Duty[]>{
+        console.log("GET request: to get passed duties by workerId=[" + workerId + "]");
+        return this.dutyService.getPassedByWorkerId(workerId);
+    }
+
     @Get("/getReadyByWorkerId/:workerId")
     public getReadyByWorkerId(@Param("workerId") workerId: number):Promise<Duty>{
         console.log("GET request: to get duty with status ready by workerId=[" + workerId + "]");
