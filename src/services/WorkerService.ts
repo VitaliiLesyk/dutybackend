@@ -55,7 +55,7 @@ export class WorkerService {
     }
     public deleteById(id: number):Promise<Worker>{
         console.log("WorkerService: to delete worker by id=[" + id + "]");
-        return this.dutyService.deleteByWorkerId(id).then(deleted =>{
+        return this.dutyService.deleteWithStatusReadyByWorkerId(id).then(deleted =>{
             return this.workerRepository.findOneById(id).then(found =>{
                 if(this.workerHasPassedDuty(found)) {
                     found.setStatus(WorkerStatus.FIRED);
@@ -68,9 +68,10 @@ export class WorkerService {
     public getByCurrentDateDuty():Promise<Worker> {
         console.log("WorkerService: to get by current duties");
         return this.dutyService.getOneByCurrentDate().then(currentDuty=>{
-            return this.workerRepository.findOneByDuty(currentDuty).then(found=>{
-                return found;
-            });
+            if(typeof currentDuty !== 'undefined')
+                return this.workerRepository.findOneByDuty(currentDuty).then(found=>{
+                    return found;
+                });
         });
     }
     private idIsNull(id: number): boolean {
