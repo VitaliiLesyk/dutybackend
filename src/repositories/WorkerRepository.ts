@@ -44,4 +44,10 @@ export class WorkerRepository extends Repository<Worker>{
             });
         })
     }
+    public findOneByEmail(email:string):Promise<Worker>{
+        return this.createQueryBuilder('worker')
+            .select()
+            .where('worker.email = :email', {email: email})
+            .getOne();
+    }
 }

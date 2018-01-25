@@ -91,7 +91,7 @@ export class DutyService {
         return this.dutyRepository.findByDate(Date.today());
     }
 
-    public deleteByWorkerId(workerId: number):Promise<Duty>{
+    public deleteWithStatusReadyByWorkerId(workerId: number):Promise<Duty>{
         console.log("DutyService: delete by worker id=[" + workerId + "]");
         return this.dutyRepository.deleteWithStatusReadyByWorkerIdAndReturn(workerId).then(deleted =>{
             let deletedStartDate = deleted.getStartDate();
