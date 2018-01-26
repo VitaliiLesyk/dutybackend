@@ -6,12 +6,11 @@ import { Middleware, ExpressErrorMiddlewareInterface, HttpError } from 'routing-
 export class ErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
 
     public error(error: HttpError, req: express.Request, res: express.Response, next: express.NextFunction): void {
-        res.json({
+        res.status(error.httpCode | 400).json({
             name: error.name,
             message: error.message,
             errors: error['errors']||[],
         });
-
         console.error("ErrorHandler:\nError=[" + error.name + "]\nMessage=[" + error.message + "]");
     }
 

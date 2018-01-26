@@ -1,5 +1,10 @@
+import {IsEmail, IsNotEmpty, Length} from "class-validator";
+
 export class UserDto{
+    @IsEmail()
     private username:string;
+    @IsNotEmpty({message:"Password field should be not empty"})
+    @Length(8, 20, {message:"Password field should have size=[8-20]"})
     private password:string;
 
     constructor(username:string, password:string){

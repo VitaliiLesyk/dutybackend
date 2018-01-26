@@ -1,4 +1,4 @@
-import {Body, JsonController, Post} from "routing-controllers";
+import {Body, HttpCode, JsonController, OnUndefined, Post} from "routing-controllers";
 import {WorkerRepository} from "../repositories/WorkerRepository";
 import {OrmRepository} from "typeorm-typedi-extensions";
 import {UserDto} from "../dto/UserDto";
@@ -21,13 +21,12 @@ export class AuthController{
         if(user.getUsername() === config.admin && user.getPassword() === config.password){
             return this.createToken(Roles.ADMIN);
         }
-
         return this.workerRepository.findOneByEmail(user.getUsername()).then((worker)=>{
             if(worker && worker.getPassword() === user.getPassword()){
                 return this.createToken(Roles.USER);
             }
             else{
-                return {status:false};
+                throw new Error("Can't login. Incorrect data.");
             }
         });
     }
