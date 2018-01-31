@@ -1,4 +1,6 @@
-import {Body, Delete, Get, JsonController, Post, Put, Param, UseBefore} from 'routing-controllers';
+import {
+    Body, Delete, Get, JsonController, Post, Put, Param, UseBefore
+} from 'routing-controllers';
 import {Task} from "../models/Task";
 import {TaskService} from "../services/TaskService";
 import {TokenCheckingMiddleware} from "../middlewares/TokenCheckingMiddleware";
