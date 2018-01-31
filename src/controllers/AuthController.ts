@@ -5,6 +5,7 @@ import {UserDto} from "../dto/UserDto";
 import {config} from "../config";
 import {Roles} from "../enums/Roles";
 import * as jwt from "jsonwebtoken";
+import {AuthResultDto} from "../dto/AuthResultDto";
 
 @JsonController()
 export class AuthController{
@@ -31,11 +32,11 @@ export class AuthController{
         });
     }
 
-    private createToken(role:Roles){
+    private createToken(role:Roles):AuthResultDto{
         const payload = {role: role};
         let token = jwt.sign(payload, config.secret, {expiresIn: 1440});
         console.log("Token created=[" + token + "]");
-        return {status: true, token: token};
+        return new AuthResultDto(true, token);
     }
 
 }
