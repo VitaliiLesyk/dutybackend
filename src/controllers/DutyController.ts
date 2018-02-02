@@ -3,6 +3,7 @@ import {DutyService} from "../services/DutyService";
 import {Duty} from "../models/Duty";
 import {AdminRoleCheckingMiddleware} from "../middlewares/AdminRoleCheckingMiddleware";
 import {TokenCheckingMiddleware} from "../middlewares/TokenCheckingMiddleware";
+import {AdminOrUserRolesCheckingMiddleware} from "../middlewares/AdminOrUserRolesCheckingMiddleware";
 
 @JsonController("/duty")
 export class DutyController{
@@ -37,7 +38,7 @@ export class DutyController{
         return this.dutyService.getPassedByWorkerId(workerId);
     }
 
-    @UseBefore(AdminRoleCheckingMiddleware)
+    @UseBefore(AdminOrUserRolesCheckingMiddleware)
     @UseBefore(TokenCheckingMiddleware)
     @Get("/getReadyByWorkerId/:workerId")
     public getReadyByWorkerId(@Param("workerId") workerId: number):Promise<Duty>{

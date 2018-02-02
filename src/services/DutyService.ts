@@ -91,6 +91,11 @@ export class DutyService {
         return this.dutyRepository.findByDate(Date.today());
     }
 
+    public getOneWithStatusReadyByCurrentDate():Promise<Duty>{
+        console.log("DutyService: to get current duty with status ready");
+        return this.dutyRepository.findWithStatusReadyByDate(Date.today());
+    }
+
     public deleteWithStatusReadyByWorkerId(workerId: number):Promise<Duty>{
         console.log("DutyService: delete by worker id=[" + workerId + "]");
         return this.dutyRepository.deleteWithStatusReadyByWorkerIdAndReturn(workerId).then(deleted =>{
