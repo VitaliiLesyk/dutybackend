@@ -25,7 +25,7 @@ export class WorkerController{
         return this.workerService.add(worker);
     }
 
-    @UseBefore(AdminRoleCheckingMiddleware)
+    @UseBefore(AdminOrUserRolesCheckingMiddleware)
     @UseBefore(TokenCheckingMiddleware)
     @Get("/getReady")
     public getAllOrderedByDutyWithStatusReady():Promise<Worker[]>{

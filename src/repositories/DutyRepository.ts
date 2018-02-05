@@ -25,6 +25,16 @@ export class DutyRepository extends Repository<Duty>{
             .where("DATE(:date) BETWEEN duty.startDate AND duty.overDate", {date: date})
             .getOne();
     }
+
+    public findWithStatusReadyByDate(date:Date):Promise<Duty>{
+        console.log("DutyRepository to find ready by date=[" + date + "]");
+        return this.createQueryBuilder("duty")
+            .select()
+            .where("DATE(:date) BETWEEN duty.startDate AND duty.overDate", {date: date})
+            .andWhere("duty.status = :status", {status: DutyStatus.READY})
+            .getOne();
+    }
+
     public findOneWithStatusReadyByWorkerId(workerId:number):Promise<Duty>{
         console.log("DutyRepository to find one with status ready by worker id=[" + workerId + "]");
         return this.createQueryBuilder("duty")

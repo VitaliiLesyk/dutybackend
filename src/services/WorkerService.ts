@@ -57,17 +57,24 @@ export class WorkerService {
         console.log("WorkerService: to delete worker by id=[" + id + "]");
         return this.dutyService.deleteWithStatusReadyByWorkerId(id).then(deleted =>{
             return this.workerRepository.findOneById(id).then(found =>{
-                if(this.workerHasPassedDuty(found)) {
-                    found.setStatus(WorkerStatus.FIRED);
-                    return this.workerRepository.save(found);
-                }
-                return this.workerRepository.deleteByIdAndReturn(id);
+                return this.workerHasPassedDuty(found).then(result=>{
+                    if(result){
+                        found.setStatus(WorkerStatus.FIRED);
+                        return this.workerRepository.save(found).then(saved=>{
+                            return saved;
+                        });
+                    }else{
+                        return this.workerRepository.deleteByIdAndReturn(id).then(deleted=> {
+                            return deleted;
+                        });
+                    }
+                });
             });
         });
     }
     public getByCurrentDateDuty():Promise<Worker> {
         console.log("WorkerService: to get by current duties");
-        return this.dutyService.getOneByCurrentDate().then(currentDuty=>{
+        return this.dutyService.getOneWithStatusReadyByCurrentDate().then(currentDuty=>{
             if(typeof currentDuty !== 'undefined')
                 return this.workerRepository.findOneByDuty(currentDuty).then(found=>{
                     return found;
@@ -79,8 +86,8 @@ export class WorkerService {
     }
 
     private workerHasPassedDuty(worker: Worker): Promise<boolean> {
-        return this.dutyService.getAllByWorkerId(worker.getId()).then(found=>{
-           return found.length > 1;
+        return this.dutyService.getPassedByWorkerId(worker.getId()).then(found=>{
+            return found.length !== 0;
         });
     }
 }
