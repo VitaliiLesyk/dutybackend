@@ -9,17 +9,17 @@ export class Duty extends BaseEntity{
     @PrimaryGeneratedColumn()
     private id:number;
 
-    @Column({'type':"date", 'nullable': false})
+    @Column({'name': 'start_date', 'type':"date", 'nullable': false})
     private startDate:Date;
 
-    @Column({'type':"date", 'nullable':false})
+    @Column({'name': 'over_date', 'type':"date", 'nullable':false})
     private overDate:Date;
 
-    @Column({'type': "enum", 'enum': DutyStatus, 'default': DutyStatus.READY})
+    @Column({'enum': DutyStatus, 'default': DutyStatus.READY})
     private status: DutyStatus;
 
     @ManyToOne(type => Worker, worker => worker.duties)
-    @JoinColumn()
+    @JoinColumn({'name': 'worker_id'})
     worker:Worker;
 
     public static readonly DUTY_DAYS_NUMBER: number = 7;

@@ -6,8 +6,11 @@ import {TokenRoleChecker} from "../TokenRoleChecker";
 export class AdminOrUserRolesCheckingMiddleware implements ExpressMiddlewareInterface{
     public use(req:express.Request, res:express.Response, next:express.NextFunction){
         let token = req.headers['x-access-token'].toString();
-        if(TokenRoleChecker.check(token, Roles.USER, Roles.ADMIN)){
+        if(TokenRoleChecker.check(token, Roles.USER)){
             next();
+        }
+        if(TokenRoleChecker.check(token, Roles.ADMIN)){
+             next();
         }
     }
 }

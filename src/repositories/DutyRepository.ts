@@ -12,7 +12,7 @@ export class DutyRepository extends Repository<Duty>{
             this.createQueryBuilder("duty")
                 .delete()
                 .from(Duty, "duty")
-                .where("duty.workerId = :workerId", {workerId: workerId})
+                .where("duty.worker_id = :workerId", {workerId: workerId})
                 .andWhere("duty.status = :status", {status: DutyStatus.READY})
                 .execute();
             return found;
@@ -22,7 +22,7 @@ export class DutyRepository extends Repository<Duty>{
         console.log("DutyRepository to find by date=[" + date + "]");
         return this.createQueryBuilder("duty")
             .select()
-            .where("DATE(:date) BETWEEN duty.startDate AND duty.overDate", {date: date})
+            .where("DATE(:date) BETWEEN duty.start_date AND duty.over_date", {date: date})
             .getOne();
     }
 
@@ -40,21 +40,21 @@ export class DutyRepository extends Repository<Duty>{
         return this.createQueryBuilder("duty")
             .select()
             .where("duty.status = :status", {status: DutyStatus.READY})
-            .andWhere("duty.workerId = :workerId", {workerId: workerId})
+            .andWhere("duty.worker_id = :workerId", {workerId: workerId})
             .getOne();
     }
     public findAllByWorkerId(workerId:number):Promise<Duty[]>{
         console.log("DutyRepository to find all by worker id=[" + workerId + "]");
         return this.createQueryBuilder("duty")
             .select()
-            .where("duty.workerId = :workerId", {workerId: workerId})
+            .where("duty.worker_id = :workerId", {workerId: workerId})
             .getMany();
     }
     public findPassedByWorkerId(workerId:number):Promise<Duty[]>{
         console.log("DutyRepository to find passed by worker id=[" + workerId + "]");
         return this.createQueryBuilder("duty")
             .select()
-            .where("duty.workerId = :workerId", {workerId: workerId})
+            .where("duty.worker_id = :workerId", {workerId: workerId})
             .andWhere("duty.status = :status", {status: DutyStatus.PASSED})
             .getMany();
     }
@@ -62,15 +62,15 @@ export class DutyRepository extends Repository<Duty>{
         console.log("DutyRepository to find two with status ready by workers ids: id1=[" + workerId1 + "], id2=[" + workerId2 + "]");
         return this.createQueryBuilder("duty")
             .select()
-            .where("duty.workerId = :workerId1 AND duty.status = :status", {workerId1: workerId1, status:DutyStatus.READY})
-            .orWhere("duty.workerId = :workerId2 AND duty.status = :status", {workerId2: workerId2, status: DutyStatus.READY})
+            .where("duty.worker_id = :workerId1 AND duty.status = :status", {workerId1: workerId1, status:DutyStatus.READY})
+            .orWhere("duty.worker_id = :workerId2 AND duty.status = :status", {workerId2: workerId2, status: DutyStatus.READY})
             .getMany();
     }
     public findAllWithStatusReadyAfterDate(date:Date): Promise<Duty[]>{
         console.log("DutyRepository to find all with status ready after date=[" + date.toString("dd-MM-yyyy") + "]");
         return this.createQueryBuilder("duty")
             .select()
-            .where("duty.startDate > DATE(:date)", {date:date})
+            .where("duty.start_date > DATE(:date)", {date:date})
             .andWhere("duty.status = :status", {status: DutyStatus.READY})
             .getMany();
     }

@@ -23,7 +23,7 @@ export class Worker extends BaseEntity{
     @Column({type:"varchar", nullable:false})
     private password:string;
 
-    @Column({type:"enum", enum: WorkerStatus, default: WorkerStatus.READY})
+    @Column({enum: WorkerStatus, default: WorkerStatus.READY})
     private status:WorkerStatus;
 
     @OneToMany(type => Duty, duty => duty.worker)
