@@ -8,10 +8,10 @@ import {WorkerService} from "../services/WorkerService";
 export const ormLoader: MicroframeworkLoader = async (settings: MicroframeworkSettings | undefined) => {
 
     const connection = await createConnection({
-        type: 'mysql',
+        type: 'postgres',
         host: 'localhost',
-        port: 3306,
-        username: 'root',
+        port: 5432,
+        username: 'postgres',
         password: 'welcome',
         database: 'duty_db',
         synchronize: true,
@@ -30,8 +30,7 @@ export const ormLoader: MicroframeworkLoader = async (settings: MicroframeworkSe
             "migrationsDir": "dist/migration",
             "subscribersDir": "dist/subscriber"
         },
-        dropSchema: true,
-        timezone: 'local'
+        dropSchema: false
     });
 
     if (settings) {

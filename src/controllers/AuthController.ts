@@ -6,6 +6,7 @@ import {config} from "../config";
 import {Roles} from "../enums/Roles";
 import * as jwt from "jsonwebtoken";
 import {AuthResultDto} from "../dto/AuthResultDto";
+import {WorkerStatus} from "../enums/WorkerStatus";
 
 @JsonController()
 export class AuthController{
@@ -23,7 +24,7 @@ export class AuthController{
             return this.createToken(Roles.ADMIN);
         }
         return this.workerRepository.findOneByEmail(user.getUsername()).then((worker)=>{
-            if(worker && worker.getPassword() === user.getPassword()){
+            if(worker && worker.getPassword() === user.getPassword() && worker.getStatus()!== WorkerStatus.FIRED){
                 return this.createToken(Roles.USER);
             }
             else{

@@ -20,7 +20,7 @@ export class WorkerRepository extends Repository<Worker>{
     public findAllWithStatusReadyOrderByDutyDateWithDutyStatusReady():Promise<Worker[]>{
         return this.createQueryBuilder('worker')
             .leftJoin('worker.duties', 'duties')
-            .orderBy('duties.startDate')
+            .orderBy('duties.start_date')
             .where("duties.status = :status", {status: DutyStatus.READY})
             .andWhere("worker.status = :status", {status: WorkerStatus.READY})
             .getMany();
